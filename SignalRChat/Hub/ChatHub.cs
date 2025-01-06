@@ -71,6 +71,7 @@
             {
                 ConnectedUsers[Context.ConnectionId] = "online";
                 await Clients.All.SendAsync("UserStatusUpdate", ConnectedUsers);
+                await GetCurrentUserId();
                 await base.OnConnectedAsync();
             }
 
@@ -81,14 +82,19 @@
                 await base.OnDisconnectedAsync(exception);
             }
 
+            public async Task GetCurrentUserId()
+            {
+                await Clients.Caller.SendAsync("ReceiveCurrentUserId", Context.ConnectionId);
+            }
+
             public async Task SendMessageToAll(string user, string message)
             {
                 await Clients.All.SendAsync("ReceiveMessage", user, message);
             }
 
-            public async Task SendMessageToClient(string connectionId, string user, string message)
+            public async Task SendMessageToClient(string connectionId, string sender, string message)
             {
-                await Clients.Client(connectionId).SendAsync("ReceiveMessage", user, message);
+                await Clients.Client(connectionId).SendAsync("ReceiveMessage", sender, message);
             }
 
             public async Task JoinGroup(string groupName)
@@ -108,6 +114,7 @@
                 await Clients.Client(connectionId).SendAsync("ReceiveTypingNotification", Context.ConnectionId);
             }
         }
+
     }
 
 }

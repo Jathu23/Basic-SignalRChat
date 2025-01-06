@@ -1,16 +1,69 @@
 <div class="chat-container">
+  <!-- Display Current User ID -->
+  <div class="current-user">
+    <h3>Your ID: {{ currentUserId }}</h3>
+
+  </div>
+
+  <!-- Sidebar for Users -->
   <div class="users">
     <h3>Users</h3>
     <ul>
-      <li *ngFor="let user of users | keyvalue">{{ user.key }} - {{ user.value }}</li>
+      <li *ngFor="let user of users | keyvalue">
+        <strong>{{ user.key }}</strong> - {{ user.value }}
+        <button (click)="selectPrivateRecipient(user.key)">Message</button>
+        <span *ngIf="typingUsers.includes(user.key)">typing...</span>
+      </li>
     </ul>
   </div>
-  <div class="chat">
-    <div class="messages">
-      <div *ngFor="let msg of messages">{{ msg }}</div>
+
+  <!-- Chat Sections -->
+  <div class="chat-sections">
+    <!-- Broadcast Section -->
+    <div class="broadcast-section">
+      <h3>Broadcast</h3>
+      <div class="messages" id="broadcast-messages">
+        <div *ngFor="let msg of broadcastMessages">{{ msg }}</div>
+      </div>
+      <input
+        [(ngModel)]="broadcastMessage"
+        (keydown)="onTyping('broadcast')"
+        placeholder="Type a broadcast message"
+      />
+      <button (click)="sendBroadcastMessage()">Send</button>
     </div>
-    <input [(ngModel)]="user" placeholder="Your name" />
-    <input [(ngModel)]="message" placeholder="Type a message" (keyup.enter)="sendMessage()" />
-    <button (click)="sendMessage()">Send</button>
+
+    <!-- Private Messaging Section -->
+    <div class="private-section" *ngIf="privateMessageRecipient">
+      <h3>Private Chat with {{ privateMessageRecipient }}</h3>
+      <div class="messages" id="private-messages">
+        <div *ngFor="let msg of privateMessages">{{ msg }}</div>
+      </div>
+      <input
+        [(ngModel)]="privateMessage"
+        (keydown)="onTyping(privateMessageRecipient)"
+        placeholder="Type a private message"
+      />
+      <button (click)="sendPrivateMessage()">Send</button>
+    </div>
+
+    <!-- Group Chat Section -->
+    <div class="group-section">
+      <h3>Group Chats</h3>
+      <button (click)="createGroup()">Create New Group</button>
+      <div *ngFor="let group of groups" class="group" [id]="'group-' + group.name">
+        <h4>{{ group.name }}</h4>
+        <div class="messages">
+          <div *ngFor="let msg of group.messages">{{ msg }}</div>
+        </div>
+        <input
+          [(ngModel)]="group.message"
+          (keydown)="onTyping(group.name)"
+          placeholder="Type a group message"
+        />
+        <button (click)="sendGroupMessage(group.name, group.message)">Send</button>
+        <button (click)="leaveGroup(group.name)">Leave Group</button>
+      </div>
+    </div>
   </div>
 </div>
