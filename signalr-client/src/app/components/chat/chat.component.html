@@ -1,0 +1,16 @@
+<div class="chat-container">
+  <div class="users">
+    <h3>Users</h3>
+    <ul>
+      <li *ngFor="let user of users | keyvalue">{{ user.key }} - {{ user.value }}</li>
+    </ul>
+  </div>
+  <div class="chat">
+    <div class="messages">
+      <div *ngFor="let msg of messages">{{ msg }}</div>
+    </div>
+    <input [(ngModel)]="user" placeholder="Your name" />
+    <input [(ngModel)]="message" placeholder="Type a message" (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>
